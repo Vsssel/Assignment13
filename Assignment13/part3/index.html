@@ -1,0 +1,169 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Vue Carousel Example</title>
+  <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/vue@2"></script>
+</head>
+<body>
+
+<div id="app">
+  <div class="carousel">
+    <div class="carousel-display">
+      <img :src="currentItem.src" :alt="currentItem.alt" id="img" />
+    </div>
+    <div class="btns">
+        <button @click="prevItem" class="nav-button"><</button>
+        <button @click="nextItem" class="nav-button">></button>
+    </div>
+    <div v-if="showIndicators" class="indicators">
+      <span
+        v-for="(item, index) in items"
+        :key="index"
+        @click="goToItem(index)"
+        :class="{ active: index === currentItemIndex }"
+      ></span>
+    </div>
+  </div>
+</div>
+
+<script>
+new Vue({
+  el: '#app',
+  data() {
+    return {
+      items: [
+        { src: 'https://i0.wp.com/picjumbo.com/wp-content/uploads/beautiful-nature-mountain-scenery-with-flowers-free-photo.jpg?w=600&quality=80', alt: 'Image 1' },
+        { src: 'https://images.unsplash.com/photo-1546587348-d12660c30c50?q=80&w=1000&auto=format&fit=crop&ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxzZWFyY2h8N3x8bmF0dXJhbHxlbnwwfHwwfHx8MA%3D%3D', alt: 'Image 2', caption: 'Caption for Image 2' },
+        { src: 'https://png.pngtree.com/background/20230512/original/pngtree-nature-background-sunset-wallpaer-with-beautiful-flower-farms-picture-image_2503007.jpg', alt: 'Image 2'}
+      ],
+      currentItemIndex: 0,
+      autoplayInterval: null,
+      showIndicators: true
+    };
+  },
+  computed: {
+    currentItem() {
+      return this.items[this.currentItemIndex];
+    }
+  },
+  mounted() {
+    this.startAutoplay();
+  },
+  methods: {
+    nextItem() {
+      this.currentItemIndex = (this.currentItemIndex + 1) % this.items.length;
+    },
+    prevItem() {
+      this.currentItemIndex =
+        (this.currentItemIndex - 1 + this.items.length) % this.items.length;
+    },
+    startAutoplay() {
+      this.autoplayInterval = setInterval(this.nextItem, 5000); // Adjust the interval as needed
+    },
+    stopAutoplay() {
+      clearInterval(this.autoplayInterval);
+    },
+    goToItem(index) {
+      this.currentItemIndex = index;
+      this.stopAutoplay(); // Stop autoplay when the user manually navigates
+    }
+  },
+  beforeDestroy() {
+    this.stopAutoplay();
+  }
+});
+</script>
+
+<style>
+body{
+    background-color: #333;
+}
+#app{
+    width: 100vw;
+    height: 100vh;
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.carousel {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.carousel-display {
+  position: relative;
+  overflow: hidden;
+}
+
+.carousel-display img {
+  width: 100%;
+  height: auto;
+}
+
+#img{
+    width: 800px;
+    height: 500px;
+}
+
+.caption {
+  position: absolute;
+  bottom: 10px;
+  left: 0;
+  width: 100%;
+  text-align: center;
+  color: white;
+}
+
+.btns{
+    width: 100%;
+    height: auto;
+    position: absolute;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+}
+
+.nav-button {
+  width: 40px;
+  height: 40px;
+  position: relative;
+  transform: translateY(-50%);
+  background-color: white;
+  color:#333;
+  padding: 10px;
+  border: none;
+  z-index: 100;
+  cursor: pointer;
+  border-radius: 50%;
+}
+
+.indicators {
+  position: absolute;
+  bottom: 20px;
+  left: 50%;
+  transform: translateX(-50%);
+  display: flex;
+  gap: 8px;
+}
+
+.indicators span {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background-color: #ddd;
+  cursor: pointer;
+}
+
+.indicators span.active {
+  background-color: #333;
+}
+</style>
+
+</body>
+</html>
