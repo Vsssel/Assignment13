@@ -6,134 +6,141 @@
     <title>Vue Timeline Component</title>
     <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/vue@2"></script>
-</head>
-<body>
-    <div id="wrapper">
-        <div id="app">
-            <timeline-component :events="events"></timeline-component>
-        </div>
-    </div>
-  <style>
-        *{
-            color: #fff;
-            font-family: Verdana, Geneva, Tahoma, sans-serif;
+    <style>
+        body {
             margin: 0;
-            padding: 0;
+            font-family: Verdana, Geneva, Tahoma, sans-serif;
+            background-color: #f0f0f0;
         }
-        #wrapper{
-            width: 100vw;
+
+        #app {
+            display: flex;
+            align-items: center;
+            justify-content: center;
             height: 100vh;
-            display: flex;
-            align-items: center;
-            justify-content: center;
         }
-        #app{
-            width: 500px;
-            height: 400px;
-            padding: 30px;
-            box-shadow: 1px 1px 4px 4px black;
-        }
+
         .timeline {
+            width: 800px;
             display: flex;
-            flex-direction: column;
+            flex-direction: row;
             align-items: center;
             justify-content: center;
+            justify-content: space-between;
         }
 
         .timeline-event {
             width: 200px;
             height: 100px;
             margin-bottom: 20px;
-            width: 200px;
-            background-color: #47A992;
+            background-color: #3498db;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            position: relative;
+            border-radius: 8px;
+            transition: 0.3s;
+        }
+
+        .timeline-event:hover {
+            background-color: #2980b9;
         }
 
         .event-date {
-            min-width: 100px;
             color: #fff;
             text-align: center;
+            min-width: 100px;
         }
 
-        .event-title{
+        .event-title {
             text-align: center;
+            margin-top: 8px;
         }
-        .event-header{
-            width: 100%;
-            height: 100%;
-            display: flex;
-            align-items:center;
-            justify-content: center;
-            flex-direction: column;
-        }
-        .event-content {
-            border: 1px solid #ccc;
-            border-radius: 8px;
-            position: relative;
-        }
-        .event-description{
+
+        .event-description {
             position: absolute;
-            top: 135px;
-            left: 400px;
-            width: 500px;
-            height: 400px;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 300px;
+            height: 200px;
             background-color: #fff;
-            border: 1px solid black;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            flex-direction: column;
-            color: black;
+            border: 1px solid #3498db;
+            display: none;
+            border-radius: 8px;
+            padding: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
         }
-        button{
+
+        .timeline-event:hover .event-description {
+            display: flex;
+        }
+
+        button {
             width: 70px;
             height: 20px;
-            background-color: #47A992;
+            background-color: #3498db;
+            cursor: pointer;
+            color: #fff;
+            border: none;
+            border-radius: 4px;
+            display: flex;
+            justify-self: end;
+            align-self: flex-end;
         }
     </style>
-    <script src="https://cdn.jsdelivr.net/npm/vue@2"></script>
+</head>
+<body>
+    <div id="app">
+        <timeline-component :events="events"></timeline-component>
+    </div>
+
     <script>
         Vue.component('timeline-component', {
-        props: ['events'],
-        data() {
-            return {
-            sortedEvents: this.sortEventsByDate(),
-            };
-        },
-        methods: {
-            sortEventsByDate() {
-            return this.events.slice().sort((a, b) => new Date(a.date) - new Date(b.date));
+            props: ['events'],
+            data() {
+                return {
+                    sortedEvents: this.sortEventsByDate(),
+                };
             },
-            openDescription(index) {
-            this.$set(this.sortedEvents, index, { ...this.sortedEvents[index], showDescription: true });
+            methods: {
+                sortEventsByDate() {
+                    return this.events.slice().sort((a, b) => new Date(a.date) - new Date(b.date));
+                },
+                openDescription(index) {
+                    this.$set(this.sortedEvents, index, { ...this.sortedEvents[index], showDescription: true });
+                },
+                closeDescription(index) {
+                    this.$set(this.sortedEvents, index, { ...this.sortedEvents[index], showDescription: false });
+                },
             },
-            closeDescription(index) {
-            this.$set(this.sortedEvents, index, { ...this.sortedEvents[index], showDescription: false });
-            },
-        },
-        template: `
-            <div class="timeline">
-            <div v-for="(event, index) in sortedEvents" :key="index" class="timeline-event">
-                <div class="event-header"  @click="openDescription(index)">
-                    <div class="event-date">{{ event.date }}</div>
-                    <div class="event-title">{{ event.title }}</div>
+            template: `
+                <div class="timeline">
+                    <div v-for="(event, index) in sortedEvents" :key="index" class="timeline-event">
+                        <div class="event-header" @click="openDescription(index)">
+                            <div class="event-date">{{ event.date }}</div>
+                            <div class="event-title">{{ event.title }}</div>
+                        </div>
+                        <div v-if="event.showDescription" class="event-description">
+                            {{ event.description }}
+                            <button @click="closeDescription(index)">Close</button>
+                        </div>
+                    </div>
                 </div>
-                <div v-if="event.showDescription" class="event-description">{{ event.description }}
-                <button @click="closeDescription(index)">Close</button>
-                </div>
-            </div>
-            </div>
-        `,
+            `,
         });
 
         new Vue({
-        el: '#app',
-        data: {
-            events: [
-            { title: 'Assignment', date: '2023-01-01', description: 'Front End assignment', showDescription: false },
-            { title: 'Quiz', date: '2023-02-15', description: 'Statistics quiz', showDescription: false },
-            { title: 'Quiz', date: '2023-02-12', description: 'Data structures and algorithms quiz', showDescription: false }
-            ]
-        },
+            el: '#app',
+            data: {
+                events: [
+                    { title: 'Assignment', date: '2023-01-01', description: 'Front End assignment', showDescription: false },
+                    { title: 'Quiz', date: '2023-02-15', description: 'Statistics quiz', showDescription: false },
+                    { title: 'Quiz', date: '2023-02-12', description: 'Data structures and algorithms quiz', showDescription: false }
+                ]
+            },
         });
     </script>
 </body>
